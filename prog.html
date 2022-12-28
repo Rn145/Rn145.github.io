@@ -699,6 +699,8 @@
 		
 		OnMouseWheel.init();
 		canvas.wheelAPI=function(a,e){
+			if(a==0)
+				return;
 			let wh=Engine.width/2;
 			let hh=Engine.height/2;
 			let cx=e.layerX
