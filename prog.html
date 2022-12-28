@@ -1,0 +1,833 @@
+<html>
+	<head>
+		<style>
+			body{
+				padding: 0;
+				margin: 0;
+			}
+			#left,#right{
+				display: inline-block;
+				vertical-align: top;
+				max-height: 100%;
+			}
+			#right{
+				width: calc( 100% - 530px);
+			}
+			.box{
+				position: relative;
+				border: 2px solid silver;
+				border-radius: 5px;
+				background: white;
+				margin:5px;
+				margin-top:10px;
+				padding: 5px;
+			}
+			.box > .boxname{
+				background: white;
+				//border: 2px solid silver;
+				border-top: none;
+				border-bottom: none;
+				border-radius: 10px;
+				height: 15px;
+				max-width: 80%;
+				position: absolute;
+				top: -12px;
+				left: 0px;
+				z-index: 10;
+			}
+			.box > .boxcontent{
+				overflow: auto;
+				max-height: 100%;
+			}
+			.noborder > .boxname{
+				border: none;
+			}
+			.noborder{
+				border: 2px solid #ff000000;
+			}
+			#display{
+				width: 500px;
+				height: 500px;
+			}
+			#info{
+				width: 500px;
+				height: calc( 100% - 500px - 55px);
+			}
+			#control{
+				height: calc( 100% - 30px );
+			}
+			#pointslist,#curveslist{
+				min-height: 160px;
+			}
+			button{
+				width: 100%;
+			}
+			input[type=number]{
+				width:70px;
+			}
+			button[class=min]{
+				width: auto;
+			}
+			.on{
+				background: #999;
+				border-style: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<div id=left>
+			<div id=display class=box>
+				<div class=boxname>Дисплей:</div>
+				<canvas id=canvas width=500 height=500></canvas>
+			</div>
+			<div id=info class=box>
+				<div class=boxname>Информация:</div>
+				<div class=boxcontent>
+					Авторы:<br />
+					Фазылзянов Руслан Динарович<br />
+					Насибуллин Ахмад Ильгизович<br />
+					Камалтдинов Тагир Рашидович<br />
+					Гегельский Владислав Евгеньевич<br />
+					Бурцев Даниил Александрович<br />
+					Группа: ИБАС-О-21/1<br />
+					
+					<h2>Краткое руководство:</h2>
+					<h3>Базовые кнопки:</h3>
+						Кнопка "Создать кривую" создаёт кривую по указанным параметрам и выделяет созданную кривую.<br />
+						Кнопка "Применить к выделенной кривой" применяет установленные параметры к выделенной кривой. Если вы не выделили кривую то ничего не происходит.<br />
+						Кнопка "Создать точку" Создаёт новую точку у выделенной кривой на координатах (0:0). Если вы не выделили кривую то ничего не происходит.<br />
+						<br />
+					<h3>Кнопки у кривых:</h3>
+						Кнопка "Выделить" выделяет кривую.<br />
+						Кнопка "X" удаляет кривую.<br />
+						<br />
+					<h3>Кнопки у точек:</h3>
+						Кнопка "выше" сдвигает точку вверх по списку.<br />
+						Кнопка "ниже" сдвигает точку вниз по списку.<br />
+						Кнопка "X" удаляет точку.<br />
+						<br />
+					<h3>!!! иногда правая панель не обновляется !!!</h3>
+					Это решается выделением любой кривой. (если выделить выделенную кривую то панель обновится но ничего более не произойдёт).<br />
+						<br />
+					<h3>Управление на дисплее:</h3>
+						Вы можете перемещать центр координат перетаскивая его зажав ЛКМ.<br />
+						Вы можете перемещать точки перетаскивая их зажав ЛКМ.<br />
+						Вы можете снять выделение нажав ПКМ.<br />
+						Вы можете вернуть центр координат в центр дисплея нажав СКМ.<br />
+						Вы можете изменить масштаб путём прокрутки колёсика мыши. НЕ РЕКОМЕНДУЕТСЯ ИСПОЛЬЗОВАТЬ ЖЕСТЫ МАСШТАБИРОВАНИЯ<br />
+				</div>
+			</div>
+		</div>
+		<div id=right>
+			<div id=control class=box>
+				<div class=boxname>Управление кривыми:</div>
+				<div class=boxcontent>
+					<div id=buttons class=box>
+						<!--<div class=boxname>Настройки кривой:</div>-->
+						<div class="box noborder">
+							<div class=boxname>Алгоритм кривой:</div>
+							<input id=alg1 name=algoritm type=radio>Эрмит</input>
+							<input id=alg2 name=algoritm type=radio>Безье</input>
+							<input id=alg3 name=algoritm type=radio>B-сплайн</input>
+						</div>
+						<input id=toCycle type=checkbox>Зациклить кривую</input><br />
+						<input id=gname type=text>Название</input><br />
+						<input id=gcolor type=color>Цвет</input><br /><br />
+						<button onclick="ev('create')">Создать новую кривую</button><br />
+						<button onclick="ev('edit',)">Применить к выделеной кривой</button>
+						
+						
+						<div id=focSettings class=box>
+							<div class=boxname>Список точек:</div>
+							<button onclick="ev('pointcreate')">Добавить точку</button>
+							<div id=pointslist>
+								
+								
+								
+							</div>
+						</div>
+					</div>
+					<div id=list class=box>
+						<div class=boxname>Список кривых:</div>
+						<div id=curveslist>
+						
+							
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script>
+		var OnOffsetAPI={
+			init:function(){
+				canvas.offsetAPI=undefined;
+				document.onmouseup=function(e){
+					OnOffsetAPI.isMouseDown=false;
+					if(canvas.offsetAPI)
+						canvas.offsetAPI(0,0,4,e);
+				};
+				canvas.onmousedown=function(e){
+					if(e.which==3){
+						if(canvas.offsetAPI)
+							canvas.offsetAPI(0,0,3,e);
+					}
+					else if(e.which==2){
+						if(canvas.offsetAPI)
+							canvas.offsetAPI(0,0,2,e);
+					}
+					else if(e.which==1){
+						OnOffsetAPI.isMouseDown=true;
+						OnOffsetAPI.lastoffsetX=e.offsetX;
+						OnOffsetAPI.lastoffsetY=e.offsetY;
+					}
+				};
+				canvas.onmousemove=function(e){
+					OnOffsetAPI.mine(e);
+					if(document.moveAPI)
+						document.moveAPI(e);
+				};
+			},
+			mine:function(e){
+				if(this.isMouseDown){
+					if(canvas.offsetAPI)
+						canvas.offsetAPI(e.offsetX-this.lastoffsetX,e.offsetY-this.lastoffsetY,1,e);
+					this.lastoffsetX=e.offsetX;
+					this.lastoffsetY=e.offsetY;
+				}
+			},
+			lastoffsetX:null,
+			lastoffsetY:null,
+			isMouseDown:false
+		};
+	</script>
+	<script>
+		var OnMouseWheel={
+			init:function(){
+				canvas.wheelAPI=undefined;
+				if(canvas.addEventListener){
+					if('onwheel' in canvas)
+						canvas.addEventListener("wheel",this.main);
+					else if('onmousewheel' in canvas)
+						canvas.addEventListener("mousewheel",this.main);
+					else
+						canvas.addEventListener("MozMousePixelScroll",this.main);
+				}
+				else
+					canvas.attachEvent("onmousewheel",this.main);
+			},
+			main:function(e){
+				e=e||window.event;
+				var delta=e.deltaY||e.detail||e.wheelDelta;
+				if(canvas.wheelAPI)
+					canvas.wheelAPI(delta/100*3,e);
+				//e.preventDefault?e.preventDefault():(e.returnValue=false);
+			}
+		};
+	</script>
+	<script>
+		//служебные функции
+		function fact(n){
+			return( n>1 ? n*fact(n-1) : 1 );
+		}
+		
+		function MultiplyMatrix(A,B){
+			let rowsA=A.length,
+				rowsB=B.length,
+				colsA=A[0].length,
+				colsB=B[0].length,
+				C=[];
+			
+			if(colsA!=rowsB)
+				return(false);
+			
+			for(let i=0; i<rowsA; i++)
+				C[i]=[];
+			
+			let t=0;
+			for(let k=0; k<colsB; k++)
+				for(let i=t=0; i<rowsA; i++){
+					for(let j=0; j<rowsB; j++)
+						t+=A[i][j]*B[j][k];
+					C[i][k]=t;
+				}
+			return(C);
+		}
+		
+		//основной код
+		const Engine={
+			
+			//отрисовка дисплея
+			draw:function(){
+				let w=this.width;     //ширина дисплея в px
+				let h=this.height;    //высота дисплея в px
+				let wh=w/2;           //половина ширины дисплея в px
+				let hh=h/2;           //половина высоты дисплея в px
+				let s =this.scale;    //количество px в одном условном unit
+				let ctx=this.ctx;     //объект дисплея
+				let ox=this.offset.x; //смещение центра координат на дисплее в px
+				let oy=this.offset.y; //смещение центра координат на дисплее в px
+				
+				//wh+ox+s * x(t) Отрисовка x(t) с переводом в px и относительно центра координат с учётом его смещения
+				//hh+oy+s * y(t)
+				
+				ctx.clearRect(0, 0, w, h);
+				
+				//сетка
+				let oxs=ox%s;
+				let oys=oy%s;
+				ctx.beginPath();
+				for(let i=0,l=Math.ceil(wh/s); i<=l; i++){
+					ctx.moveTo(wh+i*s+oxs, 0);
+					ctx.lineTo(wh+i*s+oxs, h);
+					ctx.moveTo(wh-i*s+oxs, 0);
+					ctx.lineTo(wh-i*s+oxs, h);
+				}
+				for(let i=0,l=Math.ceil(hh/s); i<=l; i++){
+					ctx.moveTo(0, hh+i*s+oys);
+					ctx.lineTo(w, hh+i*s+oys);
+					ctx.moveTo(0, hh-i*s+oys);
+					ctx.lineTo(w, hh-i*s+oys);
+				}
+				ctx.closePath();
+				ctx.strokeStyle='#dddddd';
+				ctx.stroke();
+				
+				//главные оси
+				let oxss=Math.min( Math.max(ox, -wh), wh);
+				let oyss=Math.min( Math.max(oy, -hh), hh);
+				ctx.beginPath();
+				ctx.moveTo(oxss+wh, 0);
+				ctx.lineTo(oxss+wh, h);
+				ctx.moveTo(0, oyss+hh);
+				ctx.lineTo(w, oyss+hh);
+				ctx.closePath();
+				ctx.strokeStyle='#ff0000';
+				ctx.stroke();
+				
+				//координаты на осях
+				let oxd=Math.round((ox-oxs)/s);
+				let oyd=Math.round((oy-oys)/s);
+				let st=(s/16<1 ? 2 : 1);
+				ctx.font=Math.round(Math.max(s*st/2,8))+"px monospace";
+				ctx.textBaseline=(oy<0?'top':'bottom');
+				ctx.textAlign=(ox<0?'left':'right');
+				ctx.fillStyle='#ff0000';
+				for(let i=Math.abs(oxd%2)*(st-1),l=Math.ceil(wh/s); i<=l; i+=st){
+					ctx.fillText(-oxd+i, wh+oxs+i*s, oyss+hh);
+					ctx.fillText(-oxd-i, wh+oxs-i*s, oyss+hh);
+				}
+				for(let i=Math.abs(oyd%2)*(st-1),l=Math.ceil(hh/s); i<=l; i+=st){
+					ctx.fillText(oyd-i, oxss+wh, hh+oys+i*s);
+					ctx.fillText(oyd+i, oxss+wh, hh+oys-i*s);
+				}
+				
+				//шаг изменения t
+				let d=0.01;
+				
+				//пробегаем по Кривым
+				this.curves.forEach((curve,curve_index)=>{
+					
+					//Эрмит
+					if(curve.algoritm==1){
+						if(curve.points.length==4){//если ровно 4 точки (2 управляющие и 2 основные)
+						
+							//начинаем построение эскиза
+							ctx.beginPath();
+							
+							//перемещаем перо на позицию первой упр. точки (так как в кривая эрмита начинается в ней)
+							ctx.moveTo(ox+wh+curve.points[0].x*s,oy+hh-curve.points[0].y*s);
+							
+							//Объявляем матрицу кривой Эрмита
+							let Mh=[
+								[ 2,-2, 1, 1],
+								[-3, 3,-2,-1],
+								[ 0, 0, 1, 0],
+								[ 1, 0, 0, 0]
+							];
+							
+							//Объявляем матрицы точек
+							let Gx=[
+								[curve.points[0].x],
+								[curve.points[3].x],
+								[curve.points[1].x-curve.points[0].x],
+								[curve.points[2].x-curve.points[3].x]
+							];
+							let Gy=[
+								[curve.points[0].y],
+								[curve.points[3].y],
+								[curve.points[1].y-curve.points[0].y],
+								[curve.points[2].y-curve.points[3].y]
+							];
+							
+							//объявляем заранее, чтобы не объявлять в цикле
+							let TMh;
+							
+							//Прорисовываем кривую начиная не с первой точки.
+							for(let t=d; t<=1+d; t+=d){
+								
+								TMh=MultiplyMatrix([[t**3,t**2,t,1]],Mh);
+								
+								//добавляем в эскиз линию от предыдущей до указаной тут позиции
+								ctx.lineTo(
+									ox+wh+s*MultiplyMatrix(TMh,Gx)[0][0],
+									oy+hh-s*MultiplyMatrix(TMh,Gy)[0][0]
+								);
+							}
+							
+							//устанавливаем перо на начало кривой (эскиз при закрытии использует lineTo в позицию первой точки из текущей позиции, что замыкает эскиз)
+							ctx.moveTo(ox+wh+curve.points[0].x*s,oy+hh-curve.points[0].y*s);
+							
+							ctx.closePath();             //закрываем построение эскиза
+							ctx.strokeStyle=curve.color; //устанавливаем цвет пера
+							ctx.stroke();                //рисуем эскиз на дисплей
+							
+							curve.status=3;
+						}
+						else
+							curve.status=1;
+					}
+					
+					//Безье
+					if(curve.algoritm==2){
+						if(curve.points.length<2)
+							curve.status=4;
+						else{
+							if(curve.points.length>15)
+								curve.status=2;
+							else
+								curve.status=3;
+							
+							//получаем индекс последней точки
+							let n=curve.points.length-1;
+							
+							//получаем для каждой точки "сочетание", что является частью формулы кривой Безье и не зависит от t
+							//подготавливаем эти значения только если их нет в кривой или если количество точек измененно.
+							//они сохраняются за кривой и зависят ИСКЛЮЧИТЕЛЬНО от количества точек
+							//и при следующих отрисовках будут использоваться уже готовые значения и они заново вычисляться не будут
+							//что полезно для Безье с большим количеством точек.
+							if(curve.data?.length!=curve.points.length ){
+								curve.data=[];
+								for(let i=0; i<=n; i++)
+									curve.data[i]=fact(n)/(fact(i)*fact(n-i));
+							}
+							
+							//начинаем построение эскиза
+							ctx.beginPath();
+							
+							//перемещаем перо на позицию первой упр. точки (так как в кривая Безье начинается в ней)
+							ctx.moveTo(ox+wh+curve.points[0].x*s,oy+hh-curve.points[0].y*s);
+							
+							//объявляем временные переменные в которых будут находится промежуточные вычисления.
+							let tmp;
+							let sx;
+							let sy;
+								
+							//Прорисовываем кривую начиная не с первой точки.
+							for(let t=d; t<=1+d; t+=d){
+								sx=sy=0;
+								
+								//проробатываем каждую точку
+								for(let i=0; i<=n; i++){
+									
+									//просчитываем слагаемые для точки i при текущем t
+									tmp=curve.data[i]*(t**i)*((1-t)**(n-i));
+									sx+=curve.points[i].x*tmp;
+									sy+=curve.points[i].y*tmp;
+								}
+								
+								//добавляем в эскиз линию от предыдущей до указаной тут позиции
+								ctx.lineTo(ox+wh+s*sx, oy+hh-s*sy);
+							}
+							//перемещаем перо на позицию первой упр. точки (так как в кривая Безье начинается в ней)
+							ctx.moveTo(ox+wh+curve.points[0].x*s, oy+hh-curve.points[0].y*s);
+							
+							
+							ctx.closePath();             //закрываем построение эскиза
+							ctx.strokeStyle=curve.color; //устанавливаем цвет пера
+							ctx.stroke();                //рисуем эскиз на дисплей
+						}
+					}
+					
+					//B-сплайн
+					if(curve.algoritm==3){
+						if(curve.points.length<4)
+							curve.status=5;
+						else{
+							curve.status=3;
+							
+							let n=curve.points.length;
+							
+							//Объявляем матрицу для B-сплайна из 4х точек
+							let Mh=[
+								[-1/6, 3/6,-3/6, 1/6],
+								[ 3/6,-6/6, 3/6, 0/6],
+								[-3/6, 0/6, 3/6, 0/6],
+								[ 1/6, 4/6, 1/6, 0/6]
+							];
+							
+							//Объявляем матрицы и назначаем их для посчёта певой точки кривой
+							let Gx=[
+								[curve.points[0].x],
+								[curve.points[1].x],
+								[curve.points[2].x],
+								[curve.points[3].x]
+							];
+							let Gy=[
+								[curve.points[0].y],
+								[curve.points[1].y],
+								[curve.points[2].y],
+								[curve.points[3].y]
+							];
+							let TMh=MultiplyMatrix([[0,0,0,1]], Mh);
+							let sx=MultiplyMatrix(TMh, Gx)[0][0];
+							let sy=MultiplyMatrix(TMh, Gy)[0][0];
+							
+							//запоминаем координату первой точки кривой для возврата к ней в конце
+							let ssx=sx;
+							let ssy=sy;
+							
+							//начинаем построение эскиза
+							ctx.beginPath();
+							
+							//перемещаем перо на позицию первой точки кривой.
+							ctx.moveTo(ox+wh+s*sx, oy+hh-s*sy);
+							
+							//целиком B-сплайн состоит из множества кривых по 4 точки.
+							//тут подсчитывается сколько всего кривых должно быть просчитано для использования всех точек в кривой.
+							//с учётом зацикливания
+							let max_curves= (curve.to_cycle? n : n-3)
+							let index_curve=0;
+							
+							//просчитываем часть итоговой кривой
+							while(index_curve < max_curves){
+								
+								//составляем матрицы для координат точек
+								Gx=[
+									[curve.points[(0+index_curve)%n].x],
+									[curve.points[(1+index_curve)%n].x],
+									[curve.points[(2+index_curve)%n].x],
+									[curve.points[(3+index_curve)%n].x]
+								];
+								Gy=[
+									[curve.points[(0+index_curve)%n].y],
+									[curve.points[(1+index_curve)%n].y],
+									[curve.points[(2+index_curve)%n].y],
+									[curve.points[(3+index_curve)%n].y]
+								];
+								
+								//Прорисовываем часть кривой начиная не с первой точки.
+								for(let t=d*10; t<=1+d*10; t+=d*10){
+								
+									//просчитываем матрицы учитывая текущий t
+									TMh=MultiplyMatrix([[t**3,t**2,t,1]],Mh);
+									sx=MultiplyMatrix(TMh,Gx)[0][0];
+									sy=MultiplyMatrix(TMh,Gy)[0][0];
+									
+									//добавляем в эскиз линию от предыдущей до указаной тут позиции
+									ctx.lineTo(ox+wh+s*sx, oy+hh-s*sy);
+								}
+								index_curve++;
+							}
+							
+							//перемещаем перо на позицию первой упр. точки (так как в кривая Безье начинается в ней)
+							ctx.moveTo(ox+wh+ssx*s, oy+hh-ssy*s);
+							
+							
+							ctx.closePath();             //закрываем построение эскиза
+							ctx.strokeStyle=curve.color; //устанавливаем цвет пера
+							ctx.stroke();                //рисуем эскиз на дисплей
+						}
+					}
+					
+					//отрисовка точек если эта кривая является выделенной в данный момент
+					if(this.focus==curve_index){
+						ctx.fillStyle=curve.color;
+						curve.points.forEach((point, point_index)=>{
+							ctx.beginPath();
+							ctx.arc(
+								ox+hh+s*point.x,
+								oy+hh-s*point.y,
+								Math.round(Math.max(s* (s/16<1 ? 2 : 1) /2,8))/4,
+								0,
+								Math.PI*2
+							);
+							ctx.closePath()
+							ctx.fill();
+							
+							ctx.textBaseline='bottom';
+							ctx.textAlign='center';
+							ctx.fillStyle='#000000';
+							ctx.fillText(point_index, ox+hh+s*point.x, oy+hh-s*point.y-5);
+						});
+					}
+				});
+			},
+			
+			
+			
+			createCurve:function(algoritm, to_cycle, name, color){
+				let tmp={
+					points:[],
+					algoritm,
+					to_cycle,
+					name,
+					color: color ?? 'black',
+					status: 0
+				};
+				console.log(arguments)
+				let i=this.curves.push(tmp);
+				if(!name)
+					tmp.name='Безымянная';
+			},
+			editCurve:function(curve_index, algoritm, to_cycle, name, color){
+				this.curves[curve_index]={
+					points:this.curves[curve_index].points,
+					algoritm,
+					to_cycle,
+					name,
+					color,
+					status: 0
+				};
+			},
+			createPoint:function(curve_index, x, y){
+				this.curves[curve_index].points.push({x:+x,y:+y});
+			},
+			editPoint:function(curve_index, point_index, x, y){
+				this.curves[curve_index].points[point_index]={x:+x,y:+y};
+			},
+			deleteCurve:function(curve_index){
+				this.curves.splice(curve_index,1);
+			},
+			deletePoint:function(curve_index, point_index){
+				this.curves[curve_index].points.splice(point_index,1);
+			},
+			
+			ctx: canvas.getContext('2d'),
+			width:500,  //pixels
+			height:500, //pixels
+			curves:[],
+			offset:{
+				x:0, //pixels
+				y:0  //pixels
+			},
+			scale:10, //pixels in unit
+			focus:-1,
+			
+			curve_statuses:[
+				'не отрисован',
+				'в Кривой Эрмита должно быть ровно 4 точки',
+				'в Кривой Безье	более 15и точек плохо сказывается на производительности',
+				'всё ок',
+				'в Кривой Безье требуется минимум 2 точки',
+				'в Кривой B-сплайна требуется минимум 4 точки'
+			]
+		}
+		
+		var movingPointIndex=-1;
+		var isMovePoint=false;
+		OnOffsetAPI.init();
+		canvas.offsetAPI=function(x,y,isToZero,e){
+			if(isToZero==3){//ПКМ
+				Engine.focus=focus_curve_index=-1;
+				isMovePoint=false;
+				Engine.draw();
+				recreateLists();
+			}
+			else if(isToZero==1){//ЛКМ
+				let s =Engine.scale;
+				if(!isMovePoint){
+					let stop=false;
+					if(~Engine.focus){
+						let cx=e.offsetX;
+						let cy=e.offsetY;
+						let wh=Engine.width/2;
+						let hh=Engine.height/2;
+						let ox=Engine.offset.x;
+						let oy=Engine.offset.y;
+						
+						let px;
+						let py;
+						
+						let min_dist=100;
+						let min_dist_to=0;
+						
+						Engine.curves[Engine.focus].points.forEach((point,point_index)=>{
+							px=ox+wh+point.x*s;
+							py=oy+hh-point.y*s;
+							
+							let dist=(cx-px)**2 + (cy-py)**2;
+							if( dist<min_dist ){
+								min_dist=dist;
+								min_dist_to=point_index;
+							}
+						});
+						
+						if(min_dist < 10**2){
+							stop=isMovePoint=true;
+							movingPointIndex=min_dist_to;
+						}
+					}
+					
+					if(!stop){
+						Engine.offset.x+=x//*Engine.scale;
+						Engine.offset.y+=y//*Engine.scale;
+					}
+				}
+				else{
+					Engine.curves[Engine.focus].points[movingPointIndex].x+=x/s;
+					Engine.curves[Engine.focus].points[movingPointIndex].y-=y/s;
+				}
+				Engine.draw();
+			}
+			else if(isToZero==4){
+				isMovePoint=false;
+				Engine.draw();
+				//recreateLists();
+			}
+			else if(isToZero==2){//СКМ
+				Engine.offset.x=0;
+				Engine.offset.y=0;
+				Engine.draw();
+				//recreateLists();
+			}
+		}
+		canvas.moveAPI=function(e){
+			
+		}
+		
+		OnMouseWheel.init();
+		canvas.wheelAPI=function(a,e){
+			let wh=Engine.width/2;
+			let hh=Engine.height/2;
+			let cx=e.layerX
+			let cy=e.layerY
+			let ox=Engine.offset.x;
+			let oy=Engine.offset.y;
+			let s =Engine.scale;
+			
+			let ux=((wh-cx)+ox)/s;
+			let uy=((hh-cy)+oy)/s;
+			
+			s-=s/10*(a/Math.abs(a));
+			if(s<3)    s=3;
+			if(s>wh/4) s=wh/4;
+			
+			ox=ux*s+cx-wh;
+			oy=uy*s+cy-hh;
+			
+			Engine.offset.x=ox;
+			Engine.offset.y=oy;
+			Engine.scale=s;
+			Engine.draw();
+		}
+		
+		var focus_curve_index=-1;
+		function ev(action,index,value){
+			if(action=='create'){
+				Engine.createCurve(
+					(alg1.checked?1:(alg2.checked?2:(alg3.checked?3:-1))),
+					toCycle.checked,
+					gname.value,
+					gcolor.value
+				);
+				focus_curve_index=Engine.curves.length-1;
+			}
+			else if(action=='edit'){
+				Engine.editCurve(
+					focus_curve_index,
+					(alg1.checked?1:(alg2.checked?2:(alg3.checked?3:-1))),
+					toCycle.checked,
+					gname.value,
+					gcolor.value
+				);
+			}
+			else if(action=='delete'){
+				Engine.deleteCurve(index);
+			}
+			
+			else if(action=='tofocus'){
+				focus_curve_index=index;
+			}
+			
+			else if(~focus_curve_index){
+				if(action=='pointcreate'){
+					Engine.createPoint(focus_curve_index, 0, 0);
+				}
+				else if(action=='pointx'){
+					Engine.editPoint(focus_curve_index, index, +value, Engine.curves[focus_curve_index].points[index].y);
+				}
+				else if(action=='pointy'){
+					Engine.editPoint(focus_curve_index, index, Engine.curves[focus_curve_index].points[index].x, +value);
+				}
+				else if(action=='pointup'){
+					if(index==0)
+						return;
+					
+					let tmp=Engine.curves[focus_curve_index].points[index-1];
+					Engine.curves[focus_curve_index].points[index-1]=Engine.curves[focus_curve_index].points[index];
+					Engine.curves[focus_curve_index].points[index]=tmp;
+					
+				}
+				else if(action=='pointdown'){
+					if(index==Engine.curves[focus_curve_index].points.length-1)
+						return;
+					
+					let tmp=Engine.curves[focus_curve_index].points[index+1];
+					Engine.curves[focus_curve_index].points[index+1]=Engine.curves[focus_curve_index].points[index];
+					Engine.curves[focus_curve_index].points[index]=tmp;
+				}
+				else if(action=='pointdel'){
+					Engine.deletePoint(focus_curve_index,index);
+				}
+			}
+			Engine.draw();
+			recreateLists();
+		}
+		
+		function recreateLists(){
+		
+			if(Engine.curves[focus_curve_index]){
+				Engine.focus=focus_curve_index;
+				
+				if(Engine.curves[focus_curve_index].algoritm==1)
+					alg1.checked=true;
+				if(Engine.curves[focus_curve_index].algoritm==2)
+					alg2.checked=true;
+				if(Engine.curves[focus_curve_index].algoritm==3)
+					alg3.checked=true;
+				
+				toCycle.checked=Engine.curves[focus_curve_index].to_cycle;
+				gname.value=Engine.curves[focus_curve_index].name;
+				gcolor.value=Engine.curves[focus_curve_index].color;
+			}
+			else
+				Engine.focus=focus_curve_index=-1;
+			
+			curveslist.innerHTML='';
+			Engine.curves.forEach((curve,index)=>{
+				curveslist.innerHTML+='<div class="box curve'+(index==focus_curve_index?' on':'')+'">'+
+					'<div class=curvename>'+curve.name+'</div>'+
+					'<div class=curvestatus>Состояние: '+Engine.curve_statuses[curve.status]+'</div>'+
+					'<button class=min onclick="ev(\'tofocus\','+index+')">Выделить</button><button class=min onclick="ev(\'delete\','+index+')">X</button>'+
+					'</div>';
+			});
+			
+			pointslist.innerHTML='';
+			if(~focus_curve_index)
+				Engine.curves[focus_curve_index].points.forEach((point,index)=>{
+					pointslist.innerHTML+='<div class="box point">'+
+						'['+index+']    x=<input type=number value='+point.x+' onblur="ev(\'pointx\','+index+',this.value)" /> y=<input type=number value='+point.y+' onblur="ev(\'pointy\','+index+',this.value)" />'+
+						'<button onclick="ev(\'pointup\','+index+')" class=min>выше</button>'+
+						'<button onclick="ev(\'pointdown\','+index+')" class=min>ниже</button>'+
+						'<button onclick="ev(\'pointdel\','+index+')" class=min>X</button>'+
+						'</div>';
+				});
+				
+			Engine.draw();
+		}
+		
+		alert('МИНИМАЛЬНОЕ РАЗРЕШЕНИЕ ЭКРАНА: 820:640!\nТОЛЬКО ДЛЯ КОМПЬЮТЕРОВ!');
+	</script>
+</html>
